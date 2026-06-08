@@ -1,60 +1,55 @@
 import os
 from dotenv import load_dotenv
-from src.extractor import InstagramExtractor
+from src.extractor import InstagramScraper
 from src.parser import InstagramCaptionParser
 from src.mapper import GoogleMapsInterface
 
-# Load environmental configs
 load_dotenv()
 
 def run_pipeline():
     print("==================================================")
-    print("🚀 STARTING INSTAGRAM-TO-MAPS AUTOMATED PIPELINE   ")
+    print("🚀 RUNNING AUTOMATED DOWNLOAD & MAPPING ENGINE")
     print("==================================================\n")
 
-    # Path Configuration
-    RAW_INPUT_PATH = os.path.join("data", "raw", "saved_posts.json")
-    OUTPUT_CSV_PATH = os.path.join("data", "outputs", "my_saved_places.csv")
+    # Define standardized artifact file paths
+    RAW_JSON_CACHE = os.path.join("data", "raw", "saved_reels_download.json")
+    FINAL_CSV_DATA = os.path.join("data", "outputs", "mapped_locations.csv")
+    MAP_VIEW_HTML = os.path.join("data", "outputs", "interactive_map_view.html")
 
-    # API Keys Validation
     google_key = os.getenv("GOOGLE_MAPS_API_KEY")
     if not google_key:
-        print("[CRITICAL] Missing GOOGLE_MAPS_API_KEY in environment variables.")
+        print("[CRITICAL] Missing configuration keys. Execution aborted.")
         return
 
-    # 1. Extraction Phase
-    print("[STAGE 1] Ingesting Instagram Local Export Archives...")
-    extractor = InstagramExtractor(RAW_INPUT_PATH)
-    raw_posts = extractor.extract_saved_posts()
-    
-    if not raw_posts:
-        print(f"\n[NOTICE] Please drop a mock or real 'saved_posts.json' file into {RAW_INPUT_PATH} to run the full stack.")
-        print("Pipeline terminated gracefully.")
+    # --- STAGE 1: LIVE INSTAGRAM DOWNLOAD ---
+    print("[STAGE 1] Initiating automated Instagram Saved Reels downloadd...")
+    scraper = InstagramScraper(output_path=RAW_JSON_CACHE)
+    downloaded_posts = scraper.run_automated_download()
+
+    if not downloaded_posts:
+        print("[ERROR] No post content downloaded. Verify credentials or layout selectors.")
         return
 
-    # Initialize processing systems
+    # Initialize Processing Layers
     ai_parser = InstagramCaptionParser()
     mapper = GoogleMapsInterface(api_key=google_key)
-    
-    final_locations_pool = []
+    processed_records = []
 
-    # 2. Parsing & Geocoding Phase
-    print("\n[STAGE 2/3] Processing text with AI & fetching coordinates from Google Maps...")
-    for idx, post in enumerate(raw_posts):
-        print(f" -> Processing post {idx + 1}/{len(raw_posts)}...")
+    # --- STAGES 2 & 3: PROCESSING & GEOCODING ---
+    print("\n[STAGE 2/3] Processing text profiles and tracking map coordinates...")
+    for idx, post in enumerate(downloaded_posts):
+        print(f" -> Processing element {idx + 1}/{len(downloaded_posts)}...")
         
-        # AI Extraction
+        # AI parsing logic
         structured_venue = ai_parser.parse_caption(post['caption'])
         
         if structured_venue:
-            print(f"    ✨ AI Found: {structured_venue.venue_name} ({structured_venue.city})")
-            
-            # Map Geocoding
+            print(f"    ✨ Entity Discovered: {structured_venue.venue_name} in {structured_venue.city}")
+            # Coordinate lookup
             geo_details = mapper.geocode_venue(structured_venue.venue_name, structured_venue.city)
             
             if geo_details['latitude']:
-                # Merge data payloads
-                location_record = {
+                processed_records.append({
                     "Instagram_URL": post['url'],
                     "Name": structured_venue.venue_name,
                     "Category": structured_venue.category,
@@ -63,18 +58,22 @@ def run_pipeline():
                     "latitude": geo_details['latitude'],
                     "longitude": geo_details['longitude'],
                     "Google_Place_ID": geo_details['place_id']
-                }
-                final_locations_pool.append(location_record)
-            else:
-                print(f"    ⚠️ Could not geocode '{structured_venue.venue_name}' on Google Maps.")
-        else:
-            print("    Skip: No valid local venue found in caption text.")
+                })
 
-    # 4. Compilation & Export Phase
-    print("\n[STAGE 4] Saving compilation outputs...")
-    mapper.export_to_mapping_formats(final_locations_pool, OUTPUT_CSV_PATH)
+    # --- STAGE 4: RENDERING AND COMPILATION ---
+    print("\n[STAGE 4] Exporting final database files and visualizations...")
+    # Export data matrices
+    import pandas as pd
+    if processed_records:
+        os.makedirs(os.path.dirname(FINAL_CSV_DATA), exist_ok=True)
+        pd.DataFrame(processed_records).to_csv(FINAL_CSV_DATA, index=False)
+        print(f"[SUCCESS] CSV Ledger compiled at: {FINAL_CSV_DATA}")
+
+    # Build and render the browser-ready interactive map canvas view
+    mapper.generate_interactive_map_view(processed_records, MAP_VIEW_HTML)
+
     print("\n==================================================")
-    print("✅ PIPELINE EXECUTION COMPLETE. READY FOR MY MAPS.")
+    print("✅ EXECUTION COMPLETE. OPEN THE HTML FILE TO VIEW THE MAP.")
     print("==================================================")
 
 if __name__ == "__main__":
