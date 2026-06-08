@@ -1,0 +1,18 @@
+# Environments
+venv/
+.env
+
+# Python caching
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Data and Artifacts
+data/raw/*
+data/outputs/*
+!data/raw/.gitkeep
+!data/outputs/.gitkeep
+
+# OS specific files
+.DS_Store
+Thumbs.db
