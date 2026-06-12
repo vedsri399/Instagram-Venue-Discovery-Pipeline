@@ -6,7 +6,8 @@
 
 <img width="1007" height="676" alt="image" src="https://github.com/user-attachments/assets/cd6ecaaf-2768-44a1-b74f-1eafd2e2548e" />
 <img width="857" height="773" alt="image" src="https://github.com/user-attachments/assets/456c4856-bce9-46e6-8bc5-553837d53861" />
-<img width="1361" height="1017" alt="image" src="https://github.com/user-attachments/assets/510364d4-3226-429d-b8e4-d2325e90ef0e" />
+<img width="1361" height="1017" alt="image" src="https://github.com/user-attachments/assets/a2cd96de-acaf-4063-8a0f-9189c4545b4d" />
+
 
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
