@@ -4,6 +4,10 @@
 
 **Turn your Instagram saved posts into a live, interactive map — automatically.**
 
+<img width="1007" height="676" alt="image" src="https://github.com/user-attachments/assets/cd6ecaaf-2768-44a1-b74f-1eafd2e2548e" />
+<img width="857" height="773" alt="image" src="https://github.com/user-attachments/assets/456c4856-bce9-46e6-8bc5-553837d53861" />
+
+
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![Playwright](https://img.shields.io/badge/Scraper-Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev)
 [![Claude API](https://img.shields.io/badge/AI-Claude%20API-7C3AED?style=flat-square)](https://anthropic.com)
