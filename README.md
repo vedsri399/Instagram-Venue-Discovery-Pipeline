@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📍 instagram-map
+# 📍 Instagram Venue Discovery Pipeline
 
 **Turn your Instagram saved posts into a live, interactive map — automatically.**
 
